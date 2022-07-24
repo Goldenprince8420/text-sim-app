@@ -1,4 +1,3 @@
-import backend
 # importing flask
 from flask import Flask
 from flask import render_template
@@ -50,7 +49,7 @@ def process():
         value = cosine_scores[0][0]
         result = 'Similarity Score of two Sentences is {}'.format(value)
 
-        return redirect(url_for('evaluation', value = value))
+        return render_template('evaluation.html', result=result)
     else:
         # user = request.args.get('name')
         text1 = request.args.get('text1')
