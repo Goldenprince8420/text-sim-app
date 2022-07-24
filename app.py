@@ -7,8 +7,6 @@ from flask import request
 from flask import Flask, redirect, url_for, request
 
 # Importing the summarizer
-from summarizer import Summarizer
-from summarizer.sbert import SBertSummarizer
 from sentence_transformers import SentenceTransformer, util
 
 # Using an instance of SBERT to create the model
@@ -27,12 +25,12 @@ app = Flask(__name__)
 #     return render_template('evaluation.html',result=result)
 
 
-@app.route('/evaluation/<value>')
-def evaluation(value):
-    return 'Similarity Score of two Sentences is {}'.format(value)
+@app.route("/")
+def msg():
+    return render_template('index.html')
 
 
-@app.route('/process', methods = ['POST', 'GET'])
+@app.route('/evaluate', methods = ['POST', 'GET'])
 def process():
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -49,9 +47,10 @@ def process():
 
         # Compute cosine-similarities
         cosine_scores = util.cos_sim(embeddings1, embeddings2)
-        cosine_score = cosine_scores[0][0]
+        value = cosine_scores[0][0]
+        result = 'Similarity Score of two Sentences is {}'.format(value)
 
-        return redirect(url_for('evaluation', value = cosine_score))
+        return redirect(url_for('evaluation', value = value))
     else:
         # user = request.args.get('name')
         text1 = request.args.get('text1')
@@ -66,8 +65,9 @@ def process():
 
         # Compute cosine-similarities
         cosine_scores = util.cos_sim(embeddings1, embeddings2)
-        cosine_score = cosine_scores[0][0]
-        return render_template('evaluation.html')
+        value = cosine_scores[0][0]
+        result = 'Similarity Score of two Sentences is {}'.format(value)
+        return render_template('evaluation.html', result = result)
 
 
 if __name__ == "__main__":
